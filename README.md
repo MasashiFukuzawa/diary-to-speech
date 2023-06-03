@@ -1,5 +1,7 @@
 # diary-to-speech
 
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+
 Diary-to-Speech is a Go-based CLI tool that converts English markdown diaries into mp3 files using Google's Text-to-Speech API for language learning.
 
 # Prerequisites
