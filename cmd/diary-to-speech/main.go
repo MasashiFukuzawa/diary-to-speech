@@ -8,11 +8,11 @@ import (
 	"time"
 
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
-	"google.golang.org/api/option"
-
+	texttospeechpb "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 	"github.com/MasashiFukuzawa/diary-to-speech/pkg/sections"
 	"github.com/MasashiFukuzawa/diary-to-speech/pkg/speech"
 	"github.com/joho/godotenv"
+	"google.golang.org/api/option"
 )
 
 type ErrSectionNotFound string
@@ -33,6 +33,20 @@ func handleError(err error) {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)
 	}
+}
+
+type textToSpeechClient struct {
+	client *texttospeech.Client
+}
+
+func (c *textToSpeechClient) SynthesizeSpeech(ctx context.Context, in *texttospeechpb.SynthesizeSpeechRequest) (*texttospeechpb.SynthesizeSpeechResponse, error) {
+	return c.client.SynthesizeSpeech(ctx, in)
+}
+
+type osFileWriter struct{}
+
+func (f *osFileWriter) WriteFile(filename string, data []byte, perm os.FileMode) error {
+	return os.WriteFile(filename, data, perm)
 }
 
 func main() {
@@ -72,10 +86,13 @@ func main() {
 
 	defer client.Close()
 
+	textToSpeechClient := &textToSpeechClient{client: client}
+
 	fmt.Println("Synthesizing native speeches...")
 
+	fileWriter := &osFileWriter{}
 	for section, result := range results {
-		handleError(speech.Synthesize(ctx, client, now, section, result))
+		handleError(speech.Synthesize(ctx, textToSpeechClient, fileWriter, now, section, result))
 	}
 
 	fmt.Println("Completed!")
