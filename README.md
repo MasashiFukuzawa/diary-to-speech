@@ -1,6 +1,6 @@
-# gpt-language-tutor
+# diary-to-speech
 
-An AI-powered language learning CLI tool leveraging GPT for translation and speech-to-text APIs for native pronunciation. Write in your native language, translate it into a foreign language, and practice listening to the translated text. Enhance your writing and listening skills with gpt-language-tutor.
+Diary-to-Speech is a Go-based CLI tool that converts English markdown diaries into mp3 files using Google's Text-to-Speech API for language learning.
 
 # Prerequisites
 
@@ -11,8 +11,8 @@ An AI-powered language learning CLI tool leveraging GPT for translation and spee
 # How To Use
 
 ```sh
-$ git clone git@github.com:MasashiFukuzawa/gpt-language-tutor.git
-$ cd gpt-language-tutor
+$ git clone git@github.com:MasashiFukuzawa/diary-to-speech.git
+$ cd diary-to-speech
 
 # for tutorial
 # =====================================================

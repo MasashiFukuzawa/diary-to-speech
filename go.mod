@@ -1,4 +1,4 @@
-module github.com/MasashiFukuzawa/gpt-language-tutor
+module github.com/MasashiFukuzawa/diary-to-speech
 
 go 1.20
 
