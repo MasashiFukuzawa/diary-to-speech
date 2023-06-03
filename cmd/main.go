@@ -46,6 +46,8 @@ func extractSections(source, section string, sections []string) (string, error) 
 }
 
 func main() {
+	fmt.Println("Starting...")
+
 	err := godotenv.Load()
 	if err != nil {
 		panic("Error loading .env file")
@@ -91,6 +93,8 @@ func main() {
 	}
 	defer client.Close()
 
+	fmt.Println("Synthesizing native speeches...")
+
 	for section, result := range results {
 		req := &texttospeechpb.SynthesizeSpeechRequest{
 			Input: &texttospeechpb.SynthesisInput{
@@ -119,5 +123,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+
+		fmt.Println("Completed!")
 	}
 }
