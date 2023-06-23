@@ -3,7 +3,7 @@ module github.com/MasashiFukuzawa/diary-to-speech
 go 1.20
 
 require (
-	cloud.google.com/go/texttospeech v1.7.0
+	cloud.google.com/go/texttospeech v1.7.1
 	google.golang.org/grpc v1.55.0 // indirect
 )
 
@@ -18,7 +18,7 @@ require (
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/s2a-go v0.1.4 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.4 // indirect
-	github.com/googleapis/gax-go/v2 v2.10.0 // indirect
+	github.com/googleapis/gax-go/v2 v2.11.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
