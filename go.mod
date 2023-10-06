@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	cloud.google.com/go/texttospeech v1.7.1
-	google.golang.org/grpc v1.57.0 // indirect
+	google.golang.org/grpc v1.58.2 // indirect
 )
 
 require (
@@ -39,5 +39,5 @@ require (
 require (
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.8.4
-	google.golang.org/api v0.143.0
+	google.golang.org/api v0.145.0
 )
