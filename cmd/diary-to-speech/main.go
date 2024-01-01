@@ -70,7 +70,7 @@ func main() {
 	source := string(markdown)
 	sectionNames := []string{
 		"Simple English",
-		"Sophisticated English",
+		"Advanced English",
 	}
 	results := make(map[string]string)
 	for _, section := range sectionNames {
