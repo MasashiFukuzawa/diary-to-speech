@@ -32,5 +32,8 @@ $ cp example/2023/04-30.md example/$year/$date.md
 # =====================================================
 
 $ go mod tidy
-$ go run cmd/main.go
+$ go run cmd/diary-to-speech/main.go
+
+# You can specify date.
+$ go run cmd/diary-to-speech/main.go -date 2024-01-01
 ```
