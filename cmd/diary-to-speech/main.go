@@ -16,10 +16,45 @@ import (
 	"google.golang.org/api/option"
 )
 
-type ErrSectionNotFound string
+func main() {
+	fmt.Println("Starting...")
 
-func (e ErrSectionNotFound) Error() string {
-	return fmt.Sprintf("section %q not found", string(e))
+	if err := loadEnvVariables(); err != nil {
+		fmt.Printf("Error loading env variables: %v\n", err)
+		os.Exit(1)
+	}
+
+	date, err := parseDateFlag()
+	if err != nil {
+		fmt.Printf("Error parsing date flag: %v\n", err)
+		os.Exit(1)
+	}
+
+	markdown, err := readMarkdownFile(date)
+	if err != nil {
+		fmt.Printf("Error reading markdown file: %v\n", err)
+		os.Exit(1)
+	}
+
+	if len(markdown) == 0 {
+		fmt.Println("Markdown file is empty")
+		os.Exit(1)
+	}
+
+	source := string(markdown)
+	sectionNames := []string{"Simple English", "Colloquial English"}
+	results, err := extractSections(source, sectionNames)
+	if err != nil {
+		fmt.Printf("Error extracting sections: %v\n", err)
+		os.Exit(1)
+	}
+
+	if err := synthesizeSpeech(results, date); err != nil {
+		fmt.Printf("Error in speech synthesis: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Println("Completed!")
 }
 
 func loadEnvVariables() error {
@@ -29,11 +64,53 @@ func loadEnvVariables() error {
 	return nil
 }
 
-func handleError(err error) {
-	if err != nil {
-		fmt.Printf("%v\n", err)
-		os.Exit(1)
+func parseDateFlag() (time.Time, error) {
+	var inputDate string
+	flag.StringVar(&inputDate, "date", "", "Date in YYYY-MM-DD format")
+	flag.Parse()
+
+	if inputDate != "" {
+		return time.Parse("2006-01-02", inputDate)
 	}
+	return time.Now().Local(), nil
+}
+
+func readMarkdownFile(date time.Time) ([]byte, error) {
+	year := date.Format("2006")
+	filename := fmt.Sprintf("%s.md", date.Format("01-02"))
+	filepath := filepath.Join(os.Getenv("MARKDOWN_FILEPATH_BASE"), year, filename)
+	return os.ReadFile(filepath)
+}
+
+func extractSections(source string, sectionNames []string) (map[string]string, error) {
+	results := make(map[string]string)
+	for _, section := range sectionNames {
+		result, err := sections.Extract(source, section, sectionNames)
+		if err != nil {
+			return nil, err
+		}
+		results[section] = result
+	}
+	return results, nil
+}
+
+func synthesizeSpeech(results map[string]string, date time.Time) error {
+	ctx := context.Background()
+	client, err := texttospeech.NewClient(ctx, option.WithCredentialsFile(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")))
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	ttsClient := &textToSpeechClient{client: client}
+	fileWriter := &osFileWriter{}
+
+	for section, result := range results {
+		if err := speech.Synthesize(ctx, ttsClient, fileWriter, date, section, result); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 type textToSpeechClient struct {
@@ -48,64 +125,4 @@ type osFileWriter struct{}
 
 func (f *osFileWriter) WriteFile(filename string, data []byte, perm os.FileMode) error {
 	return os.WriteFile(filename, data, perm)
-}
-
-func main() {
-	fmt.Println("Starting...")
-
-	handleError(loadEnvVariables())
-
-	var inputDate string
-	flag.StringVar(&inputDate, "date", "", "Date in YYYY-MM-DD format")
-	flag.Parse()
-
-	var now time.Time
-	if inputDate != "" {
-		var err error
-		now, err = time.Parse("2006-01-02", inputDate)
-		handleError(err)
-	} else {
-		now = time.Now().Local()
-	}
-
-	year := now.Format("2006")
-	filename := fmt.Sprintf("%s.md", now.Format("01-02"))
-	markdownFilepath := filepath.Join(os.Getenv("MARKDOWN_FILEPATH_BASE"), year, filename)
-	markdown, err := os.ReadFile(markdownFilepath)
-	handleError(err)
-
-	if len(markdown) == 0 {
-		fmt.Println("Markdown file is empty")
-		os.Exit(1)
-	}
-
-	source := string(markdown)
-	sectionNames := []string{
-		"Simple English",
-		"Colloquial English",
-	}
-	results := make(map[string]string)
-	for _, section := range sectionNames {
-		result, err := sections.Extract(source, section, sectionNames)
-		handleError(err)
-		results[section] = result
-	}
-
-	ctx := context.Background()
-
-	client, err := texttospeech.NewClient(ctx, option.WithCredentialsFile(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")))
-	handleError(err)
-
-	defer client.Close()
-
-	textToSpeechClient := &textToSpeechClient{client: client}
-
-	fmt.Println("Synthesizing native speeches...")
-
-	fileWriter := &osFileWriter{}
-	for section, result := range results {
-		handleError(speech.Synthesize(ctx, textToSpeechClient, fileWriter, now, section, result))
-	}
-
-	fmt.Println("Completed!")
 }
