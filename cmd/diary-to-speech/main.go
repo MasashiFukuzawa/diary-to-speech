@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -54,9 +55,20 @@ func main() {
 
 	handleError(loadEnvVariables())
 
-	now := time.Now().Local()
-	year := now.Format("2006")
+	var inputDate string
+	flag.StringVar(&inputDate, "date", "", "Date in YYYY-MM-DD format")
+	flag.Parse()
 
+	var now time.Time
+	if inputDate != "" {
+		var err error
+		now, err = time.Parse("2006-01-02", inputDate)
+		handleError(err)
+	} else {
+		now = time.Now().Local()
+	}
+
+	year := now.Format("2006")
 	filename := fmt.Sprintf("%s.md", now.Format("01-02"))
 	markdownFilepath := filepath.Join(os.Getenv("MARKDOWN_FILEPATH_BASE"), year, filename)
 	markdown, err := os.ReadFile(markdownFilepath)
