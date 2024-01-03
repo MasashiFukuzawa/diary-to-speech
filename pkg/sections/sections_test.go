@@ -17,14 +17,14 @@ This is a simple English section.
 ### Intermediate English
 This is an intermediate English section.
 
-### Advanced English
-This is an advanced English section.
+### Colloquial English
+This is an Colloquial English section.
 `
 
 	section := "Intermediate English"
 	expected := "This is an intermediate English section."
 
-	result, err := sections.Extract(source, section, []string{"Simple English", "Intermediate English", "Advanced English"})
+	result, err := sections.Extract(source, section, []string{"Simple English", "Intermediate English", "Colloquial English"})
 	assert.NoError(t, err)
 	assert.Equal(t, expected, result)
 }
@@ -39,13 +39,13 @@ This is a simple English section.
 ### Intermediate English
 This is an intermediate English section.
 
-### Advanced English
-This is an advanced English section.
+### Colloquial English
+This is an Colloquial English section.
 `
 
-	section := "Advanced French"
+	section := "Colloquial French"
 
-	_, err := sections.Extract(source, section, []string{"Simple English", "Intermediate English", "Advanced English"})
+	_, err := sections.Extract(source, section, []string{"Simple English", "Intermediate English", "Colloquial English"})
 	assert.Error(t, err)
-	assert.EqualError(t, err, "section \"Advanced French\" not found")
+	assert.EqualError(t, err, "section \"Colloquial French\" not found")
 }
