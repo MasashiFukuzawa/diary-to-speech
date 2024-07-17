@@ -3,7 +3,7 @@ module github.com/MasashiFukuzawa/diary-to-speech
 go 1.20
 
 require (
-	cloud.google.com/go/texttospeech v1.7.9
+	cloud.google.com/go/texttospeech v1.7.10
 	google.golang.org/grpc v1.64.1 // indirect
 )
 
