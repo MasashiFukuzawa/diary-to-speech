@@ -44,6 +44,6 @@ require (
 
 require (
 	github.com/joho/godotenv v1.5.1
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	google.golang.org/api v0.195.0
 )
